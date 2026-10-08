@@ -192,8 +192,8 @@ def fetch_artifact_from_wandb(model_full_name: str) -> Tuple[str, str]:
         raise ValueError(f"Could not fetch artifact '{model_full_name}' from W&B. Ensure the path is correct and you are logged in. Original error: {e}")
 
     # Create a target directory for the download
-    models_dir = Path(os.path.dirname(__file__)) / "models"
-    models_dir.mkdir(exist_ok=True)
+    models_dir = Path(os.path.dirname(__file__)) / "models" / artifact.name.replace(":", "_")
+    models_dir.mkdir(parents=True, exist_ok=True)
     
     # Download artifact content. The path returned is the directory where files are.
     download_path = artifact.download(root=models_dir)
@@ -247,7 +247,9 @@ class IntentClassifier:
         local_model_path = None
         
         # Set up W&B project early
-        self.wandb_project = wandb_project or os.environ.get("WANDB_PROJECT") or "intent-classifier"
+        if wandb_project is None:
+            wandb_project = os.environ.get("WANDB_PROJECT") or "intent-classifier"
+        self.wandb_project = wandb_project
 
         if load_model:
             # Check if load_model is a local file path or a W&B artifact URL

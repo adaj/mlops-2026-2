@@ -1,16 +1,13 @@
+from fastapi import APIRouter
+
+from src.modules.intent_classifier import service
+from src.modules.intent_classifier.model import Mensagem, PredicaoMensagem
 
 
-router = FastAPI()
+router = APIRouter(prefix="/intent-classifier", 
+                   tags=["intent-classifier"])
 
-
-@router.get("/dados/{id}", response_model=Dados)
-def get_dados():
-    dados = banco_de_dados.get(id)
-    return dados
-
-
-@router.post("/dados" )
-def create_dados(dados: Dados):
-    # Lógica para criar dados no banco de dados
-    return {"message": "Dados criados com sucesso", "dados": dados}
-    
+@router.post("/predictions", response_model=PredicaoMensagem)
+def create_prediction(msg: Mensagem):
+    resultados = service.predict_all(msg.text)
+    return PredicaoMensagem(mensagem=msg, resultados=resultados)
