@@ -17,7 +17,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch: # permite rodar o CI clicando em "Run workflow" na aba Actions
+  workflow_call:     # permite que outros workflows (por exemplo, cd.yml) chamem este workflow inteiro antes de publicar
 
 # Princípio do menor privilégio: o GITHUB_TOKEN só pode LER o repositório.
 permissions:
