@@ -10,11 +10,13 @@ import mongomock
 import pytest
 from fastapi.testclient import TestClient
 
+
 # (a) Variaveis de ambiente falsas: o engine.py le MONGO_URL na importacao.
 # WANDB_MODELS fica AUSENTE de proposito: cada teste define o que precisa.
 os.environ["MONGO_URL"] = "mongodb://localhost:27017"
 os.environ["WANDB_API_KEY"] = "fake"
 os.environ["WANDB_PROJECT"] = "teste"
+os.environ["OTEL_SDK_DISABLED"] = "true"   # sem exportar telemetria nos testes
 os.environ.pop("WANDB_MODELS", None)
 
 

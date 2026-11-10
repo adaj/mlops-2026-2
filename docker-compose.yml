@@ -5,16 +5,30 @@ services:
   intent-clf:
 
     container_name: intent-clf
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     ports:
-    - "8000:8000"
+      - "8000:8000"
     environment:
-    - WANDB_API_KEY=${WANDB_API_KEY}
-    - WANDB_PROJECT=${WANDB_PROJECT}
-    - WANDB_MODELS=${WANDB_MODELS}
-    - MONGO_URL=${MONGO_URL}
-    - MONGO_DB=${MONGO_DB:-intent_classifier}
-    - MONGO_PRED_COLLECTION=${MONGO_PRED_COLLECTION:-predictions}
+      - WANDB_API_KEY=${WANDB_API_KEY}
+      - WANDB_PROJECT=${WANDB_PROJECT}
+      - WANDB_MODELS=${WANDB_MODELS}
+      - MONGO_URL=${MONGO_URL}
+      - MONGO_DB=${MONGO_DB:-intent_classifier}
+      - MONGO_PRED_COLLECTION=${MONGO_PRED_COLLECTION:-predictions}
+      # OpenTelemetry
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4318
+      - OTEL_SERVICE_NAME=intent-clf
+    depends_on:
+      - lgtm
+    restart: unless-stopped
+
+  lgtm:
+    container_name: lgtm
+    image: grafana/otel-lgtm:latest
+    ports:
+      - "3000:3000" # Grafana (admin/admin)
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP (para rodar o app fora do compose)
     restart: unless-stopped
