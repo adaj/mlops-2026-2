@@ -12,9 +12,16 @@ meter = metrics.get_meter(__name__)
 # Create metrics
 prediction_count = meter.create_counter(
     "prediction_count", description="Number of predictions made")
+# Os buckets padrao do OpenTelemetry (0, 5, 10, 25, ..., 10000) foram pensados
+# para milissegundos. Como medimos em SEGUNDOS, toda inferencia (~0,05-0,5 s)
+# caia no primeiro bucket (0-5 s) e o p95 no Grafana saia sempre ~4,75 s.
+# Por isso declaramos buckets na escala de segundos.
+LATENCY_BUCKETS_S = [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 10]
+
 prediction_latency = meter.create_histogram(
     "prediction_latency_seconds", unit="s",
-    description="Latency of model predictions in seconds")
+    description="Latency of model predictions in seconds",
+    explicit_bucket_boundaries_advisory=LATENCY_BUCKETS_S)
 
 
 _models = {}
@@ -30,8 +37,14 @@ def load_models():
 
     for url in url_models:
         model_name = url.split('/')[-1].split(':')[0]
-        _models[model_name] = IntentClassifier(load_model=url, 
-                                               wandb_project=wandb_project)
+        clf = IntentClassifier(load_model=url, wandb_project=wandb_project)
+        _models[model_name] = clf
+
+        # Inicializa o contador em 0 para cada (modelo, intencao). Sem isso, a
+        # serie so nasce na primeira predicao, ja com o valor da rajada inteira,
+        # e o rate()/increase() do Prometheus ignora esse primeiro salto.
+        for intent in getattr(clf, 'codes', None) or []:
+            prediction_count.add(0, {"model": model_name, "intent": str(intent)})
     return
 
 def clear_models():
@@ -51,7 +64,7 @@ def predict_all(text: str):
         
         # Record metrics
         prediction_latency.record(duration, {"model": model_name})
-        prediction_count.add(1, {"model": model_name, "intent": intent})
+        prediction_count.add(1, {"model": model_name, "intent": str(intent)})
 
         # Output for the user
         outputs[model_name] = {'intent': intent, 'probs': probs}

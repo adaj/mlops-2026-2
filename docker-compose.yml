@@ -20,6 +20,8 @@ services:
       # OpenTelemetry
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://lgtm:4318
       - OTEL_SERVICE_NAME=intent-clf
+      # exporta metricas a cada 15 s (padrao: 60 s) para o Grafana reagir rapido em aula
+      - OTEL_METRIC_EXPORT_INTERVAL=15000
     depends_on:
       - lgtm
     restart: unless-stopped
