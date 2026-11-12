@@ -353,7 +353,7 @@
     },
     {
       "type": "row",
-      "title": "Dados de entrada",
+      "title": "Drift: produção × referência",
       "id": 9,
       "collapsed": false,
       "panels": [],
@@ -367,6 +367,212 @@
     {
       "id": 10,
       "type": "stat",
+      "title": "PSI atual",
+      "description": "Population Stability Index de cada variável. Regra de bolso: abaixo de 0,1 estável (verde); de 0,1 a 0,25 mudança moderada (laranja); acima de 0,25 mudança significativa (vermelho). Variáveis: input_words = comprimento das mensagens (data drift); predicted_intent = classe prevista e confidence = confiança (prediction drift). Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com pelo menos 30 mensagens na janela.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model, feature) (drift_psi{model=~\"$model\"})",
+          "legendFormat": "{{model}} · {{feature}}",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.1
+              },
+              {
+                "color": "red",
+                "value": 0.25
+              }
+            ]
+          },
+          "unit": "none",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "graphMode": "none",
+        "colorMode": "background",
+        "textMode": "value_and_name",
+        "orientation": "horizontal",
+        "text": {
+          "titleSize": 12,
+          "valueSize": 20
+        }
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "PSI ao longo do tempo",
+      "description": "Evolução do PSI. As linhas tracejadas horizontais marcam os limites 0,1 e 0,25. Um drift SÚBITO aparece como um degrau; um GRADUAL, como uma rampa. Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com pelo menos 30 mensagens na janela.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 17,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model, feature) (drift_psi{model=~\"$model\"})",
+          "legendFormat": "{{model}} · {{feature}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.1
+              },
+              {
+                "color": "red",
+                "value": 0.25
+              }
+            ]
+          },
+          "unit": "none",
+          "decimals": 2,
+          "min": 0
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Teste KS: p-valor",
+      "description": "Kolmogorov-Smirnov compara as DISTRIBUIÇÕES inteiras (não só a média) de comprimento e de confiança. p-valor: chance de ver uma diferença desse tamanho se não houvesse drift. Abaixo da linha vermelha (0,01) = diferença estatisticamente significativa. Escala logarítmica: cada linha de grade é 10x menor. Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com pelo menos 30 mensagens na janela.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 17,
+        "w": 8,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model, feature) (drift_ks_pvalue{model=~\"$model\"})",
+          "legendFormat": "{{model}} · {{feature}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            },
+            "scaleDistribution": {
+              "type": "log",
+              "log": 10
+            }
+          },
+          "min": 1e-06,
+          "max": 1,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.01
+              }
+            ]
+          },
+          "unit": "sci"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "row",
+      "title": "Dados de entrada",
+      "id": 13,
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 1
+      }
+    },
+    {
+      "id": 14,
+      "type": "stat",
       "title": "Comprimento médio das mensagens",
       "description": "Média de palavras por mensagem no período.",
       "datasource": {
@@ -375,7 +581,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 17,
+        "y": 27,
         "w": 5,
         "h": 8
       },
@@ -415,17 +621,17 @@
       }
     },
     {
-      "id": 11,
+      "id": 15,
       "type": "timeseries",
-      "title": "Comprimento médio ao longo do tempo",
-      "description": "Uma mudança persistente aqui é um sinal de data drift na entrada.",
+      "title": "Comprimento médio: produção × referência",
+      "description": "Linha cheia: mensagens reais. Tracejadas: média dos conjuntos de referência de cada modelo. Um afastamento persistente é sinal de data drift na entrada. A referência é o mesmo modelo rodando, no startup da API, sobre um conjunto rotulado e balanceado (data/reference/), diferente do treino.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 5,
-        "y": 17,
+        "y": 27,
         "w": 7,
         "h": 8
       },
@@ -437,7 +643,16 @@
             "uid": "prometheus"
           },
           "expr": "sum (increase(input_words_sum[$__rate_interval])) / sum (increase(input_words_count[$__rate_interval]))",
-          "legendFormat": "palavras por mensagem"
+          "legendFormat": "produção"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model) (reference_input_words_mean{intent=\"_all\", model=~\"$model\"})",
+          "legendFormat": "referência ({{model}})"
         }
       ],
       "fieldConfig": {
@@ -449,11 +664,34 @@
           "decimals": 1,
           "min": 0
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^referência.*"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    6
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          }
+        ]
       }
     },
     {
-      "id": 12,
+      "id": 16,
       "type": "bargauge",
       "title": "Distribuição do comprimento (palavras)",
       "description": "Quantas mensagens caíram em cada faixa de comprimento. O número embaixo é o limite superior da faixa: '5' = 4 ou 5 palavras; '8' = de 6 a 8 palavras.",
@@ -463,7 +701,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 17,
+        "y": 27,
         "w": 12,
         "h": 8
       },
@@ -509,90 +747,32 @@
       }
     },
     {
-      "id": 13,
-      "type": "bargauge",
-      "title": "Comprimento médio por classe prevista",
-      "description": "Média de palavras das mensagens que receberam cada classe. Classes sem nenhuma predição no período não aparecem.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 25,
-        "w": 24,
-        "h": 7
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "(sum by (model, intent) (increase(prediction_input_words_sum{model=~\"$model\"}[$__range])) / sum by (model, intent) (increase(prediction_input_words_count{model=~\"$model\"}[$__range]))) and on (model, intent) sum by (model, intent) (increase(prediction_input_words_count{model=~\"$model\"}[$__range])) > 0",
-          "legendFormat": "{{model}} · {{intent}}",
-          "instant": true,
-          "range": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-BlPu"
-          },
-          "unit": "none",
-          "decimals": 1,
-          "min": 0
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "left",
-        "text": {
-          "titleSize": 13,
-          "valueSize": 15
-        },
-        "minVizHeight": 14,
-        "maxVizHeight": 22
-      }
-    },
-    {
       "type": "row",
-      "title": "Saída dos modelos",
-      "id": 14,
+      "title": "Saída dos modelos: produção × referência",
+      "id": 17,
       "collapsed": false,
       "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 32,
+        "y": 35,
         "w": 24,
         "h": 1
       }
     },
     {
-      "id": 15,
-      "type": "bargauge",
-      "title": "Distribuição das classes previstas",
-      "description": "Quantas vezes cada classe foi prevista no período. Comparar esta 'foto' entre períodos é a forma mais simples de detectar prediction drift.",
+      "id": 18,
+      "type": "stat",
+      "title": "Acurácia nos dados de referência",
+      "description": "Acerto do modelo no conjunto de referência rotulado, calculado no startup. Em produção não há rótulos, então esta é a única acurácia que conseguimos medir continuamente; as outras comparações abaixo são indícios indiretos. A referência é o mesmo modelo rodando, no startup da API, sobre um conjunto rotulado e balanceado (data/reference/), diferente do treino.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 0,
-        "y": 33,
-        "w": 8,
-        "h": 11
+        "y": 36,
+        "w": 6,
+        "h": 8
       },
       "targets": [
         {
@@ -601,104 +781,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (model, intent) (increase(prediction_count_total{model=~\"$model\"}[$__range]))",
-          "legendFormat": "{{model}} · {{intent}}",
-          "instant": true,
-          "range": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-BlPu"
-          },
-          "unit": "short",
-          "decimals": 0,
-          "min": 0
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "left",
-        "text": {
-          "titleSize": 13,
-          "valueSize": 15
-        },
-        "minVizHeight": 14,
-        "maxVizHeight": 22
-      }
-    },
-    {
-      "id": 16,
-      "type": "timeseries",
-      "title": "Confiança média por modelo",
-      "description": "Probabilidade média da classe escolhida. Referência do 'chute': 1 / número de classes (3 classes = 33%; 7 classes = 14%). Quanto mais perto disso, menos o modelo está discriminando.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 33,
-        "w": 8,
-        "h": 11
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum by (model) (increase(prediction_confidence_sum{model=~\"$model\"}[$__rate_interval])) / sum by (model) (increase(prediction_confidence_count{model=~\"$model\"}[$__rate_interval]))",
-          "legendFormat": "{{model}}"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "lineWidth": 2
-          },
-          "unit": "percentunit",
-          "decimals": 0,
-          "min": 0,
-          "max": 1
-        },
-        "overrides": []
-      }
-    },
-    {
-      "id": 17,
-      "type": "stat",
-      "title": "Predições com baixa confiança (≤ 50%)",
-      "description": "Fração das predições em que a classe escolhida tinha probabilidade de 50% ou menos.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 33,
-        "w": 8,
-        "h": 11
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum by (model) (increase(prediction_confidence_bucket{model=~\"$model\", le=\"0.5\"}[$__range])) / sum by (model) (increase(prediction_confidence_count{model=~\"$model\"}[$__range]))",
+          "expr": "max by (model) (reference_accuracy{model=~\"$model\"})",
           "legendFormat": "{{model}}",
           "instant": true,
           "range": false
@@ -713,16 +796,16 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               },
               {
                 "color": "orange",
-                "value": 0.25
+                "value": 0.5
               },
               {
-                "color": "red",
-                "value": 0.5
+                "color": "green",
+                "value": 0.7
               }
             ]
           },
@@ -744,10 +827,81 @@
       }
     },
     {
-      "id": 18,
-      "type": "bargauge",
-      "title": "Confiança média por classe prevista",
-      "description": "Quando o modelo escolhe esta classe, com que certeza ele escolhe?",
+      "id": 19,
+      "type": "timeseries",
+      "title": "Confiança média: produção × referência",
+      "description": "Probabilidade média da classe escolhida. Compare cada modelo com a SUA referência (tracejada): o nível absoluto varia muito entre modelos (o clair_intents-clf tem probabilidades achatadas mesmo acertando), mas uma queda em relação à referência indica que as mensagens estão diferentes do que o modelo conhece. A referência é o mesmo modelo rodando, no startup da API, sobre um conjunto rotulado e balanceado (data/reference/), diferente do treino.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 36,
+        "w": 18,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (model) (increase(prediction_confidence_sum{model=~\"$model\"}[$__rate_interval])) / sum by (model) (increase(prediction_confidence_count{model=~\"$model\"}[$__rate_interval]))",
+          "legendFormat": "produção {{model}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model) (reference_confidence_mean{intent=\"_all\", model=~\"$model\"})",
+          "legendFormat": "referência {{model}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 2
+          },
+          "unit": "percentunit",
+          "decimals": 0,
+          "min": 0,
+          "max": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "^referência.*"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    10,
+                    6
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "type": "barchart",
+      "title": "Distribuição das classes previstas · $model",
+      "description": "Fração das predições em cada classe. A referência é balanceada nos RÓTULOS, mas as barras mostram as classes PREVISTAS, então já incluem os erros do modelo. Diferenças grandes entre produção e referência = prediction drift (ou um público diferente). A referência é o mesmo modelo rodando, no startup da API, sobre um conjunto rotulado e balanceado (data/reference/), diferente do treino.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -755,8 +909,8 @@
       "gridPos": {
         "x": 0,
         "y": 44,
-        "w": 12,
-        "h": 9
+        "w": 24,
+        "h": 10
       },
       "targets": [
         {
@@ -765,16 +919,27 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "(sum by (model, intent) (increase(prediction_confidence_sum{model=~\"$model\"}[$__range])) / sum by (model, intent) (increase(prediction_confidence_count{model=~\"$model\"}[$__range]))) and on (model, intent) sum by (model, intent) (increase(prediction_confidence_count{model=~\"$model\"}[$__range])) > 0",
-          "legendFormat": "{{model}} · {{intent}}",
+          "expr": "sum by (model, intent) (increase(prediction_count_total{model=\"$model\"}[$__range])) / on (model) group_left sum by (model) (increase(prediction_count_total{model=\"$model\"}[$__range]))",
           "instant": true,
-          "range": false
+          "range": false,
+          "format": "table"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model, intent) (reference_class_share{model=\"$model\"})",
+          "instant": true,
+          "range": false,
+          "format": "table"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-BlPu"
+            "mode": "palette-classic"
           },
           "unit": "percentunit",
           "decimals": 0,
@@ -784,38 +949,58 @@
         "overrides": []
       },
       "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
+        "xField": "intent",
         "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "left",
-        "text": {
-          "titleSize": 13,
-          "valueSize": 15
+        "groupWidth": 0.75,
+        "barWidth": 0.9,
+        "showValue": "auto",
+        "xTickLabelRotation": 0,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "minVizHeight": 14,
-        "maxVizHeight": 22
-      }
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "model": true
+            },
+            "renameByName": {
+              "Value #A": "produção",
+              "Value #B": "referência"
+            }
+          }
+        }
+      ],
+      "repeat": "model",
+      "repeatDirection": "h",
+      "maxPerRow": 2
     },
     {
-      "id": 19,
-      "type": "bargauge",
-      "title": "Margem média entre 1ª e 2ª classe",
-      "description": "Diferença de probabilidade entre a classe escolhida e a segunda colocada. Perto de 0: o modelo ficou dividido entre duas classes.",
+      "id": 21,
+      "type": "barchart",
+      "title": "Confiança média por classe prevista · $model",
+      "description": "Quando o modelo escolhe esta classe, com que certeza escolhe? Classes sem predições no período aparecem só com a barra de referência. A referência é o mesmo modelo rodando, no startup da API, sobre um conjunto rotulado e balanceado (data/reference/), diferente do treino.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 44,
-        "w": 12,
-        "h": 9
+        "x": 0,
+        "y": 54,
+        "w": 24,
+        "h": 10
       },
       "targets": [
         {
@@ -824,16 +1009,27 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "(sum by (model, intent) (increase(prediction_margin_sum{model=~\"$model\"}[$__range])) / sum by (model, intent) (increase(prediction_margin_count{model=~\"$model\"}[$__range]))) and on (model, intent) sum by (model, intent) (increase(prediction_margin_count{model=~\"$model\"}[$__range])) > 0",
-          "legendFormat": "{{model}} · {{intent}}",
+          "expr": "(sum by (model, intent) (increase(prediction_confidence_sum{model=\"$model\"}[$__range])) / sum by (model, intent) (increase(prediction_confidence_count{model=\"$model\"}[$__range]))) and on (model, intent) sum by (model, intent) (increase(prediction_confidence_count{model=\"$model\"}[$__range])) > 0",
           "instant": true,
-          "range": false
+          "range": false,
+          "format": "table"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model, intent) (reference_confidence_mean{model=\"$model\", intent!=\"_all\"})",
+          "instant": true,
+          "range": false,
+          "format": "table"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-BlPu"
+            "mode": "palette-classic"
           },
           "unit": "percentunit",
           "decimals": 0,
@@ -843,39 +1039,148 @@
         "overrides": []
       },
       "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
+        "xField": "intent",
         "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "valueMode": "color",
-        "namePlacement": "left",
-        "text": {
-          "titleSize": 13,
-          "valueSize": 15
+        "groupWidth": 0.75,
+        "barWidth": 0.9,
+        "showValue": "auto",
+        "xTickLabelRotation": 0,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "minVizHeight": 14,
-        "maxVizHeight": 22
-      }
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "model": true
+            },
+            "renameByName": {
+              "Value #A": "produção",
+              "Value #B": "referência"
+            }
+          }
+        }
+      ],
+      "repeat": "model",
+      "repeatDirection": "h",
+      "maxPerRow": 2
+    },
+    {
+      "id": 22,
+      "type": "barchart",
+      "title": "Comprimento médio por classe prevista · $model",
+      "description": "Média de palavras das mensagens que receberam cada classe, em produção e na referência. A referência é o mesmo modelo rodando, no startup da API, sobre um conjunto rotulado e balanceado (data/reference/), diferente do treino.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 64,
+        "w": 24,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(sum by (model, intent) (increase(prediction_input_words_sum{model=\"$model\"}[$__range])) / sum by (model, intent) (increase(prediction_input_words_count{model=\"$model\"}[$__range]))) and on (model, intent) sum by (model, intent) (increase(prediction_input_words_count{model=\"$model\"}[$__range])) > 0",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (model, intent) (reference_input_words_mean{model=\"$model\", intent!=\"_all\"})",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "none",
+          "decimals": 1,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "xField": "intent",
+        "orientation": "horizontal",
+        "groupWidth": 0.75,
+        "barWidth": 0.9,
+        "showValue": "auto",
+        "xTickLabelRotation": 0,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "model": true
+            },
+            "renameByName": {
+              "Value #A": "produção",
+              "Value #B": "referência"
+            }
+          }
+        }
+      ],
+      "repeat": "model",
+      "repeatDirection": "h",
+      "maxPerRow": 2
     },
     {
       "type": "row",
       "title": "Logs",
-      "id": 20,
+      "id": 23,
       "collapsed": false,
       "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 53,
+        "y": 74,
         "w": 24,
         "h": 1
       }
     },
     {
-      "id": 21,
+      "id": 24,
       "type": "logs",
       "title": "Últimas predições (Loki)",
       "description": "Clique numa linha para ver o trace_id e abrir o trace no Tempo.",
@@ -885,7 +1190,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 54,
+        "y": 75,
         "w": 24,
         "h": 9
       },

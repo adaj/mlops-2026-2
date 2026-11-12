@@ -1,0 +1,124 @@
+# Conjunto de REFERENCIA (nao e treino) do modelo clair_intents-clf.
+# Balanceado: 15 exemplos por classe (no treino, normal_response tem 176 e as
+# outras 10-15). Mesmo estilo dos dados de treino (chat de alunos com o agente
+# Clair, em ingles), mas SEM repetir exemplos do treino. Rotulado manualmente:
+# revise.
+- intent: ping
+  examples:
+    - clair, you still there?
+    - clair, did you disconnect?
+    - is clair online right now?
+    - claire, are you listening?
+    - did clair leave the chat?
+    - clair can you hear us?
+    - anyone know if clair is working?
+    - clair, ping
+    - claire, are you awake?
+    - is claire responding today?
+    - clair are you with us?
+    - hey clair, you there?
+    - claire, are you still running?
+    - clair, still connected?
+    - is clair broken?
+- intent: how_are_you
+  examples:
+    - clair how are you doing today?
+    - how do you feel clair?
+    - claire, are you okay?
+    - how's your day going claire?
+    - clair, how have you been?
+    - are you doing well, clair?
+    - claire, feeling good today?
+    - how are things with you clair?
+    - clair are you tired?
+    - claire, how is everything?
+    - you good clair?
+    - clair, are you happy today?
+    - how are you holding up, claire?
+    - clair how's your morning?
+    - claire, how do you feel about today?
+- intent: who_are_you
+  examples:
+    - clair, what are you?
+    - who made you claire?
+    - clair what is your job here?
+    - claire, are you a robot?
+    - what is clair supposed to do?
+    - clair, why are you in our chat?
+    - claire, which subjects can you talk about?
+    - clair, introduce yourself
+    - are you some kind of program, claire?
+    - clair, are you a teacher?
+    - what kind of bot is clair?
+    - claire, what's your role?
+    - clair, can you tell us what you do?
+    - claire, are you human?
+    - clair what are you for?
+- intent: ask_support
+  examples:
+    - clair, what do we do next?
+    - claire, any ideas?
+    - clair please help
+    - clair, we need help here
+    - claire, can you give us a hint?
+    - clair, which option should we pick?
+    - claire, tell us what to do
+    - clair, is our plan good?
+    - we don't know how to continue, clair
+    - claire, can you guide us?
+    - clair, help me decide
+    - claire, what would you do in our place?
+    - clair, should we change our answer?
+    - claire, we need some direction
+    - clair, can you support us?
+- intent: ask_content
+  examples:
+    - clair, what is velocity?
+    - claire, what does acceleration mean?
+    - clair can you explain this formula?
+    - claire, what is the difference between speed and velocity?
+    - clair, why does the slope matter?
+    - claire, give me an example of displacement
+    - clair, what does this graph show?
+    - claire, how do I calculate the average?
+    - clair, what is a variable?
+    - claire, can you explain this word?
+    - clair, how does friction work?
+    - claire, what are the units here?
+    - clair, why is it negative?
+    - claire, explain it in simple terms
+    - clair, what should my answer include?
+- intent: response_refusal
+  examples:
+    - no clair, not now
+    - clair please stop
+    - claire, I don't want to answer
+    - leave us alone clair
+    - clair, not interested
+    - no thanks claire
+    - clair stop interrupting
+    - claire, we don't need help
+    - clair, I'm busy
+    - not now claire
+    - clair I won't do that
+    - claire, please be quiet
+    - clair, skip this
+    - no clair, we're fine
+    - claire, I'd rather not
+- intent: normal_response
+  examples:
+    - ok clair
+    - thanks claire
+    - I think the answer is in the second paragraph
+    - we finished the first task
+    - let me check with my partner
+    - clair, we wrote that already
+    - my internet was slow
+    - I agree with what she said
+    - we are still working on it
+    - clair, that's what we thought
+    - did you get the same result?
+    - the experiment took longer than expected
+    - I'll write the conclusion
+    - claire, good point
+    - let's compare our answers

@@ -6,6 +6,8 @@ fastapi==0.119.1
 starlette==0.48.0
 pydantic==2.11.7
 python-dotenv==1.1.1
+# o modulo observability/reference.py le os datasets de referencia (YAML)
+PyYAML==6.0.3
 
 # --- Observabilidade (src/app.py e o service importam o OpenTelemetry) ---
 # Mesmas versoes do requirements.txt. Nos testes a exportacao fica desligada

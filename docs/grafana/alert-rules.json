@@ -1,0 +1,132 @@
+[
+  {
+    "uid": "drift-psi",
+    "title": "Drift: PSI acima de 0,25",
+    "ruleGroup": "drift",
+    "folderUID": "mlops",
+    "condition": "C",
+    "for": "1m",
+    "noDataState": "OK",
+    "execErrState": "Error",
+    "labels": {
+      "team": "mlops",
+      "severity": "warning"
+    },
+    "annotations": {
+      "summary": "PSI de {{ $labels.feature }} em {{ $labels.model }} = {{ humanize $values.B.Value }}",
+      "description": "A distribuição de produção se afastou da referência (PSI > 0,25 por 1 minuto). input_words = data drift na entrada; predicted_intent e confidence = prediction drift.",
+      "__dashboardUid__": "intent-clf-obs",
+      "__panelId__": "11"
+    },
+    "data": [
+      {
+        "refId": "A",
+        "datasourceUid": "prometheus",
+        "relativeTimeRange": {
+          "from": 300,
+          "to": 0
+        },
+        "model": {
+          "refId": "A",
+          "expr": "max by (model, feature) (drift_psi)",
+          "instant": true,
+          "range": false
+        }
+      },
+      {
+        "refId": "B",
+        "datasourceUid": "__expr__",
+        "model": {
+          "refId": "B",
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last"
+        }
+      },
+      {
+        "refId": "C",
+        "datasourceUid": "__expr__",
+        "model": {
+          "refId": "C",
+          "type": "threshold",
+          "expression": "B",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "gt",
+                "params": [
+                  0.25
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "uid": "drift-ks",
+    "title": "Drift: teste KS significativo (p < 0,01)",
+    "ruleGroup": "drift",
+    "folderUID": "mlops",
+    "condition": "C",
+    "for": "1m",
+    "noDataState": "OK",
+    "execErrState": "Error",
+    "labels": {
+      "team": "mlops",
+      "severity": "warning"
+    },
+    "annotations": {
+      "summary": "KS de {{ $labels.feature }} em {{ $labels.model }}: p = {{ humanize $values.B.Value }}",
+      "description": "As distribuições de produção e referência diferem com p-valor abaixo de 0,01 por 1 minuto.",
+      "__dashboardUid__": "intent-clf-obs",
+      "__panelId__": "12"
+    },
+    "data": [
+      {
+        "refId": "A",
+        "datasourceUid": "prometheus",
+        "relativeTimeRange": {
+          "from": 300,
+          "to": 0
+        },
+        "model": {
+          "refId": "A",
+          "expr": "max by (model, feature) (drift_ks_pvalue)",
+          "instant": true,
+          "range": false
+        }
+      },
+      {
+        "refId": "B",
+        "datasourceUid": "__expr__",
+        "model": {
+          "refId": "B",
+          "type": "reduce",
+          "expression": "A",
+          "reducer": "last"
+        }
+      },
+      {
+        "refId": "C",
+        "datasourceUid": "__expr__",
+        "model": {
+          "refId": "C",
+          "type": "threshold",
+          "expression": "B",
+          "conditions": [
+            {
+              "evaluator": {
+                "type": "lt",
+                "params": [
+                  0.01
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

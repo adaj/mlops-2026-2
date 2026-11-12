@@ -1,0 +1,55 @@
+# Conjunto de REFERENCIA (nao e treino) do modelo confusion-clf.
+# Balanceado: 15 exemplos por classe. Mesmo estilo dos dados de treino
+# (frases curtas de chat entre alunos, em ingles), mas SEM repetir exemplos
+# do treino, para nao inflar as metricas. Rotulado manualmente: revise.
+- intent: confusion
+  examples:
+    - wait, what just happened?
+    - I don't get what we're supposed to do
+    - huh, where did that come from?
+    - sorry, can you go over that again?
+    - I'm lost, which part are we on?
+    - why did the number change?
+    - what does that arrow mean?
+    - I'm confused about the second step
+    - how did you get that result?
+    - hmm, I don't understand this graph
+    - wait, is that the right formula?
+    - what are we even looking for?
+    - I can't tell what's different here
+    - how is this connected to the last one?
+    - so what do we do now?
+- intent: certainty
+  examples:
+    - I'm sure the answer is the second one
+    - yes, that's definitely how it works
+    - I know why it goes up
+    - trust me, this is correct
+    - it has to be the bigger value
+    - I already solved it, it's 25
+    - I'm confident the speed doubles
+    - this is obviously the right way
+    - no doubt, it's the blue line
+    - I know this one, it's acceleration
+    - I've done this before, it works
+    - it's clearly going to stop there
+    - I'm positive we got it right
+    - that's exactly what the rule says
+    - I understand it completely now
+- intent: neutral_statement
+  examples:
+    - ok
+    - let's try the next one
+    - I'm writing it down
+    - it moved to the right
+    - we have ten minutes left
+    - the line is flat here
+    - I'll share my screen
+    - that's the third question
+    - it goes up and then down
+    - we did that yesterday
+    - my answer is on the doc
+    - let me check the table
+    - it's the same as before
+    - I'm going to read it again
+    - alright, next part

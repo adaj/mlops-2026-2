@@ -115,16 +115,89 @@ panels += [
 ]
 y += 7
 
+# ---------------------------------------------------------------- Drift
+PSI_STEPS = {"mode": "absolute", "steps": [
+    {"color": "green", "value": None}, {"color": "orange", "value": 0.1}, {"color": "red", "value": 0.25}]}
+FEATURES = ("Variáveis: input_words = comprimento das mensagens (data drift); "
+            "predicted_intent = classe prevista e confidence = confiança (prediction drift). ")
+WINDOW_DESC = ("Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); "
+               "referência = predições do mesmo modelo nos conjuntos de data/reference/. "
+               "Só é calculado com pelo menos 30 mensagens na janela.")
+
+panels.append(row("Drift: produção × referência", y)); y += 1
+panels += [
+    panel("stat", "PSI atual", (0, y, 8, 9),
+          [q(f"max by (model, feature) (drift_psi{{{M}}})", "{{model}} · {{feature}}", instant=True)],
+          "Population Stability Index de cada variável. Regra de bolso: abaixo de 0,1 estável "
+          "(verde); de 0,1 a 0,25 mudança moderada (laranja); acima de 0,25 mudança "
+          "significativa (vermelho). " + FEATURES + WINDOW_DESC,
+          unit="none", decimals=2,
+          options={**STAT, "textMode": "value_and_name", "orientation": "horizontal",
+                   "colorMode": "background", "text": {"titleSize": 12, "valueSize": 20}},
+          defaults={"color": {"mode": "thresholds"}, "thresholds": PSI_STEPS}),
+    panel("timeseries", "PSI ao longo do tempo", (8, y, 8, 9),
+          [q(f"max by (model, feature) (drift_psi{{{M}}})", "{{model}} · {{feature}}")],
+          "Evolução do PSI. As linhas tracejadas horizontais marcam os limites 0,1 e 0,25. "
+          "Um drift SÚBITO aparece como um degrau; um GRADUAL, como uma rampa. " + WINDOW_DESC,
+          unit="none", decimals=2, minv=0,
+          defaults={"custom": {"lineWidth": 2, "thresholdsStyle": {"mode": "dashed"}},
+                    "color": {"mode": "palette-classic"}, "thresholds": PSI_STEPS}),
+    panel("timeseries", "Teste KS: p-valor", (16, y, 8, 9),
+          [q(f"max by (model, feature) (drift_ks_pvalue{{{M}}})", "{{model}} · {{feature}}")],
+          "Kolmogorov-Smirnov compara as DISTRIBUIÇÕES inteiras (não só a média) de comprimento "
+          "e de confiança. p-valor: chance de ver uma diferença desse tamanho se não houvesse "
+          "drift. Abaixo da linha vermelha (0,01) = diferença estatisticamente significativa. "
+          "Escala logarítmica: cada linha de grade é 10x menor. " + WINDOW_DESC,
+          unit="sci",
+          defaults={"custom": {"lineWidth": 2, "thresholdsStyle": {"mode": "dashed"},
+                               "scaleDistribution": {"type": "log", "log": 10}},
+                    "min": 1e-6, "max": 1, "color": {"mode": "palette-classic"},
+                    "thresholds": {"mode": "absolute", "steps": [
+                        {"color": "transparent", "value": None}, {"color": "red", "value": 0.01}]}}),
+]
+y += 9
+
 # ---------------------------------------------------------------- Entrada
+REF_STYLE = [{"matcher": {"id": "byRegexp", "options": "^referência.*"},
+              "properties": [{"id": "custom.lineStyle", "value": {"fill": "dash", "dash": [10, 6]}},
+                             {"id": "custom.fillOpacity", "value": 0}]}]
+
+
+def compare_bars(title, desc, prod_expr, ref_expr, pos, unit, decimals, maxv=None):
+    """Barras produção × referência por classe, repetidas para cada modelo."""
+    p = panel("barchart", title, pos,
+              [q(prod_expr, instant=True, format="table"),
+               q(ref_expr, ref="B", instant=True, format="table")],
+              desc, unit=unit, decimals=decimals, minv=0, maxv=maxv,
+              options={"xField": "intent", "orientation": "horizontal", "groupWidth": 0.75,
+                       "barWidth": 0.9, "showValue": "auto", "xTickLabelRotation": 0,
+                       "legend": {"displayMode": "list", "placement": "bottom", "showLegend": True},
+                       "tooltip": {"mode": "multi"}},
+              defaults={"color": {"mode": "palette-classic"}})
+    p["transformations"] = [
+        {"id": "merge", "options": {}},
+        {"id": "organize", "options": {"excludeByName": {"Time": True, "model": True},
+                                       "renameByName": {"Value #A": "produção", "Value #B": "referência"}}},
+    ]
+    p["repeat"], p["repeatDirection"], p["maxPerRow"] = "model", "h", 2
+    return p
+
+
+SEL1 = 'model="$model"'   # dentro de painel repetido: um modelo por painel
+REF_DESC = (" A referência é o mesmo modelo rodando, no startup da API, sobre um conjunto "
+            "rotulado e balanceado (data/reference/), diferente do treino.")
+
 panels.append(row("Dados de entrada", y)); y += 1
 panels += [
     panel("stat", "Comprimento médio das mensagens", (0, y, 5, 8),
           [q(mean("input_words", window="$__range"), "palavras", instant=True)],
           "Média de palavras por mensagem no período.", unit="none", decimals=1,
           options=STAT, defaults=GREEN),
-    panel("timeseries", "Comprimento médio ao longo do tempo", (5, y, 7, 8),
-          [q(mean("input_words"), "palavras por mensagem")],
-          "Uma mudança persistente aqui é um sinal de data drift na entrada.",
+    panel("timeseries", "Comprimento médio: produção × referência", (5, y, 7, 8),
+          [q(mean("input_words"), "produção"),
+           q(f'max by (model) (reference_input_words_mean{{intent="_all", {M}}})', "referência ({{model}})", ref="B")],
+          "Linha cheia: mensagens reais. Tracejadas: média dos conjuntos de referência de "
+          "cada modelo. Um afastamento persistente é sinal de data drift na entrada." + REF_DESC,
           unit="none", decimals=1, minv=0, defaults={"custom": {"lineWidth": 2}}),
     panel("bargauge", "Distribuição do comprimento (palavras)", (12, y, 12, 8),
           [q("sum by (le) (increase(input_words_bucket[$__range]))", "{{le}}", instant=True, format="heatmap")],
@@ -133,58 +206,59 @@ panels += [
           unit="short", decimals=0, minv=0,
           options={**BARS, "orientation": "vertical", "namePlacement": "auto", "text": {}}, defaults=BLUE_GRAD),
 ]
+panels[-2]["fieldConfig"]["overrides"] = REF_STYLE
 y += 8
-panels += [
-    panel("bargauge", "Comprimento médio por classe prevista", (0, y, 24, 7),
-          [q(f"({mean('prediction_input_words', 'model, intent', '$__range', M)}) "
-             f"and on (model, intent) sum by (model, intent) (increase(prediction_input_words_count{{{M}}}[$__range])) > 0",
-             "{{model}} · {{intent}}", instant=True)],
-          "Média de palavras das mensagens que receberam cada classe. Classes sem nenhuma "
-          "predição no período não aparecem.",
-          unit="none", decimals=1, minv=0, options=BARS, defaults=BLUE_GRAD),
-]
-y += 7
 
 # ---------------------------------------------------------------- Saida
-panels.append(row("Saída dos modelos", y)); y += 1
+panels.append(row("Saída dos modelos: produção × referência", y)); y += 1
 panels += [
-    panel("bargauge", "Distribuição das classes previstas", (0, y, 8, 11),
-          [q(f"sum by (model, intent) (increase(prediction_count_total{{{M}}}[$__range]))",
-             "{{model}} · {{intent}}", instant=True)],
-          "Quantas vezes cada classe foi prevista no período. Comparar esta 'foto' entre "
-          "períodos é a forma mais simples de detectar prediction drift.",
-          unit="short", decimals=0, minv=0, options=BARS, defaults=BLUE_GRAD),
-    panel("timeseries", "Confiança média por modelo", (8, y, 8, 11),
-          [q(mean("prediction_confidence", "model", sel=M), "{{model}}")],
-          "Probabilidade média da classe escolhida. Referência do 'chute': 1 / número de "
-          "classes (3 classes = 33%; 7 classes = 14%). Quanto mais perto disso, menos o "
-          "modelo está discriminando.",
-          unit="percentunit", decimals=0, minv=0, maxv=1, defaults={"custom": {"lineWidth": 2}}),
-    panel("stat", "Predições com baixa confiança (≤ 50%)", (16, y, 8, 11),
-          [q(f'sum by (model) (increase(prediction_confidence_bucket{{{M}, le="0.5"}}[$__range])) '
-             f"/ sum by (model) (increase(prediction_confidence_count{{{M}}}[$__range]))", "{{model}}", instant=True)],
-          "Fração das predições em que a classe escolhida tinha probabilidade de 50% ou menos.",
-          unit="percentunit", decimals=0, options={**STAT, "textMode": "value_and_name", "orientation": "vertical"},
+    panel("stat", "Acurácia nos dados de referência", (0, y, 6, 8),
+          [q(f"max by (model) (reference_accuracy{{{M}}})", "{{model}}", instant=True)],
+          "Acerto do modelo no conjunto de referência rotulado, calculado no startup. "
+          "Em produção não há rótulos, então esta é a única acurácia que conseguimos medir "
+          "continuamente; as outras comparações abaixo são indícios indiretos." + REF_DESC,
+          unit="percentunit", decimals=0,
+          options={**STAT, "textMode": "value_and_name", "orientation": "vertical"},
           defaults={"color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [
-              {"color": "green", "value": None}, {"color": "orange", "value": 0.25}, {"color": "red", "value": 0.5}]}}),
+              {"color": "red", "value": None}, {"color": "orange", "value": 0.5}, {"color": "green", "value": 0.7}]}}),
+    panel("timeseries", "Confiança média: produção × referência", (6, y, 18, 8),
+          [q(mean("prediction_confidence", "model", sel=M), "produção {{model}}"),
+           q(f'max by (model) (reference_confidence_mean{{intent="_all", {M}}})', "referência {{model}}", ref="B")],
+          "Probabilidade média da classe escolhida. Compare cada modelo com a SUA referência "
+          "(tracejada): o nível absoluto varia muito entre modelos (o clair_intents-clf tem "
+          "probabilidades achatadas mesmo acertando), mas uma queda em relação à referência "
+          "indica que as mensagens estão diferentes do que o modelo conhece." + REF_DESC,
+          unit="percentunit", decimals=0, minv=0, maxv=1, defaults={"custom": {"lineWidth": 2}}),
 ]
-y += 11
-panels += [
-    panel("bargauge", "Confiança média por classe prevista", (0, y, 12, 9),
-          [q(f"({mean('prediction_confidence', 'model, intent', '$__range', M)}) "
-             f"and on (model, intent) sum by (model, intent) (increase(prediction_confidence_count{{{M}}}[$__range])) > 0",
-             "{{model}} · {{intent}}", instant=True)],
-          "Quando o modelo escolhe esta classe, com que certeza ele escolhe?",
-          unit="percentunit", decimals=0, minv=0, maxv=1, options=BARS, defaults=BLUE_GRAD),
-    panel("bargauge", "Margem média entre 1ª e 2ª classe", (12, y, 12, 9),
-          [q(f"({mean('prediction_margin', 'model, intent', '$__range', M)}) "
-             f"and on (model, intent) sum by (model, intent) (increase(prediction_margin_count{{{M}}}[$__range])) > 0",
-             "{{model}} · {{intent}}", instant=True)],
-          "Diferença de probabilidade entre a classe escolhida e a segunda colocada. Perto "
-          "de 0: o modelo ficou dividido entre duas classes.",
-          unit="percentunit", decimals=0, minv=0, maxv=1, options=BARS, defaults=BLUE_GRAD),
-]
-y += 9
+panels[-1]["fieldConfig"]["overrides"] = REF_STYLE
+y += 8
+panels.append(compare_bars(
+    "Distribuição das classes previstas · $model",
+    "Fração das predições em cada classe. A referência é balanceada nos RÓTULOS, mas as "
+    "barras mostram as classes PREVISTAS, então já incluem os erros do modelo. Diferenças "
+    "grandes entre produção e referência = prediction drift (ou um público diferente)." + REF_DESC,
+    f"sum by (model, intent) (increase(prediction_count_total{{{SEL1}}}[$__range])) "
+    f"/ on (model) group_left sum by (model) (increase(prediction_count_total{{{SEL1}}}[$__range]))",
+    f"max by (model, intent) (reference_class_share{{{SEL1}}})",
+    (0, y, 24, 10), "percentunit", 0, 1))
+y += 10
+panels.append(compare_bars(
+    "Confiança média por classe prevista · $model",
+    "Quando o modelo escolhe esta classe, com que certeza escolhe? Classes sem predições "
+    "no período aparecem só com a barra de referência." + REF_DESC,
+    f"({mean('prediction_confidence', 'model, intent', '$__range', SEL1)}) "
+    f"and on (model, intent) sum by (model, intent) (increase(prediction_confidence_count{{{SEL1}}}[$__range])) > 0",
+    f'max by (model, intent) (reference_confidence_mean{{{SEL1}, intent!="_all"}})',
+    (0, y, 24, 10), "percentunit", 0, 1))
+y += 10
+panels.append(compare_bars(
+    "Comprimento médio por classe prevista · $model",
+    "Média de palavras das mensagens que receberam cada classe, em produção e na referência." + REF_DESC,
+    f"({mean('prediction_input_words', 'model, intent', '$__range', SEL1)}) "
+    f"and on (model, intent) sum by (model, intent) (increase(prediction_input_words_count{{{SEL1}}}[$__range])) > 0",
+    f'max by (model, intent) (reference_input_words_mean{{{SEL1}, intent!="_all"}})',
+    (0, y, 24, 10), "none", 1))
+y += 10
 
 # ---------------------------------------------------------------- Logs
 panels.append(row("Logs", y)); y += 1
@@ -207,6 +281,46 @@ dashboard = {
         "current": {"text": ["All"], "value": ["$__all"]}}]},
     "panels": panels,
 }
+
+# ---------------------------------------------------------------- Alertas
+PANEL_ID = {p["title"]: p["id"] for p in panels}
+
+
+def alert(uid, title, expr, op, threshold, summary, description, panel_title):
+    return {
+        "uid": uid, "title": title, "ruleGroup": "drift", "folderUID": "mlops",
+        "condition": "C", "for": "1m", "noDataState": "OK", "execErrState": "Error",
+        "labels": {"team": "mlops", "severity": "warning"},
+        "annotations": {"summary": summary, "description": description,
+                        "__dashboardUid__": "intent-clf-obs",
+                        "__panelId__": str(PANEL_ID[panel_title])},
+        "data": [
+            {"refId": "A", "datasourceUid": "prometheus", "relativeTimeRange": {"from": 300, "to": 0},
+             "model": {"refId": "A", "expr": expr, "instant": True, "range": False}},
+            {"refId": "B", "datasourceUid": "__expr__",
+             "model": {"refId": "B", "type": "reduce", "expression": "A", "reducer": "last"}},
+            {"refId": "C", "datasourceUid": "__expr__",
+             "model": {"refId": "C", "type": "threshold", "expression": "B",
+                       "conditions": [{"evaluator": {"type": op, "params": [threshold]}}]}},
+        ],
+    }
+
+
+alerts = [
+    alert("drift-psi", "Drift: PSI acima de 0,25",
+          "max by (model, feature) (drift_psi)", "gt", 0.25,
+          "PSI de {{ $labels.feature }} em {{ $labels.model }} = {{ humanize $values.B.Value }}",
+          "A distribuição de produção se afastou da referência (PSI > 0,25 por 1 minuto). "
+          "input_words = data drift na entrada; predicted_intent e confidence = prediction drift.",
+          "PSI ao longo do tempo"),
+    alert("drift-ks", "Drift: teste KS significativo (p < 0,01)",
+          "max by (model, feature) (drift_ks_pvalue)", "lt", 0.01,
+          "KS de {{ $labels.feature }} em {{ $labels.model }}: p = {{ humanize $values.B.Value }}",
+          "As distribuições de produção e referência diferem com p-valor abaixo de 0,01 por 1 minuto.",
+          "Teste KS: p-valor"),
+]
+Path(__file__).with_name("alert-rules.json").write_text(
+    json.dumps(alerts, ensure_ascii=False, indent=2), encoding="utf-8")
 
 out = Path(__file__).with_name("intent-clf-obs.json")
 out.write_text(json.dumps(dashboard, ensure_ascii=False, indent=2), encoding="utf-8")

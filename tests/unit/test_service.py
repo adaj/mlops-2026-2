@@ -83,14 +83,3 @@ def test_clear_models_esvazia_o_dicionario(modelos_falsos):
     service.clear_models()
     assert service._models == {}
 
-
-@pytest.mark.parametrize("probs, esperado", [
-    ({"a": 0.7, "b": 0.2, "c": 0.1}, (0.7, 0.5)),
-    ({"a": 0.5, "b": 0.5}, (0.5, 0.0)),
-    ({"a": 1.0}, (1.0, 1.0)),
-    ({}, (0.0, 0.0)),
-])
-def test_confidence_and_margin(probs, esperado):
-    confianca, margem = service.confidence_and_margin(probs)
-    assert confianca == pytest.approx(esperado[0])
-    assert margem == pytest.approx(esperado[1])

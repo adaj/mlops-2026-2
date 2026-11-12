@@ -10,6 +10,11 @@ USER appuser
 
 ENV PATH="/home/appuser/.local/bin:$PATH"
 
+# Cache do TF Hub fora do container (volume no docker-compose): o Universal
+# Sentence Encoder (~300 MB) e baixado uma vez so, nao a cada rebuild
+ENV TFHUB_CACHE_DIR=/home/appuser/tfhub_cache
+RUN mkdir -p /home/appuser/tfhub_cache
+
 RUN pip install --no-cache-dir --upgrade pip
 
 COPY --chown=appuser:appuser requirements.txt .

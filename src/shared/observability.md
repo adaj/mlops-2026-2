@@ -289,3 +289,20 @@ Não foi só mover código de lugar. Alguns problemas da versão antiga aparecer
 * **O `depends_on` não espera o LGTM ficar pronto.** As primeiras exportações podem falhar e são reenviadas automaticamente. É normal ver avisos de exportação nos primeiros segundos.
 * **Sem dashboards nem alertas provisionados.** Tudo é explorado manualmente pelo *Explore*. Um dashboard versionado e um alerta (por exemplo, p95 de latência acima de um limite) seriam o passo seguinte.
 * **Sem instrumentação automática do MongoDB.** O tempo do `insert_one` aparece só como a diferença entre o span da rota e os spans `model.predict`. O pacote `opentelemetry-instrumentation-pymongo` criaria spans próprios para o banco.
+
+---
+
+## 🧭 8. Referência e drift (o que entrou depois)
+
+O módulo `src/modules/intent_classifier/observability/` concentra toda a observabilidade do classificador; o `service.py` só chama funções de lá.
+
+| Arquivo | O que faz | Métricas |
+| --- | --- | --- |
+| `metrics.py` | Instrumentos OpenTelemetry e `record_*` (uma chamada por mensagem e por predição) | `prediction_*`, `input_words_*` |
+| `reference.py` | No startup, roda cada modelo sobre `data/reference/*_reference.yml` (rotulados, 15 por classe, diferentes do treino) e publica o perfil | `reference_*` (acurácia, classes, confiança, comprimento) |
+| `drift.py` | Compara a janela das últimas `DRIFT_WINDOW_SIZE` (200) mensagens com a referência: PSI e teste KS | `drift_psi`, `drift_ks_statistic`, `drift_ks_pvalue`, `drift_window_size` |
+
+- Dashboard e alertas ficam versionados em `docs/grafana/` (`build_dashboard.py` gera os JSON; `apply.py` publica no Grafana). Rode `python docs/grafana/apply.py` sempre que recriar o container `lgtm`.
+- Alertas (pasta **MLOps**, grupo **drift**, avaliados a cada 30 s): PSI > 0,25 por 1 min; p-valor do KS < 0,01 por 1 min. Não há *contact point* configurado: os alertas aparecem em *Alerting*, mas ninguém é notificado.
+- Para gerar drift de propósito: `python scripts/gerar_trafego.py --cenario estavel|portugues|gradual`.
+- A apostila da aula (LGTM + model drift, com prints deste dashboard) explica como ler cada painel.
