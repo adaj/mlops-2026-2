@@ -38,6 +38,33 @@ O OpenTelemetry possui diferentes tipos de instrumentos para registrar métricas
     * A latência da **requisição HTTP inteira** é outra métrica, gerada automaticamente pelo `FastAPIInstrumentor` (ex.: `http_server_duration_milliseconds`, o nome exato varia com a versão).
 4. **Gauge (Medidor):** Representa um valor instantâneo flutuante (ex: temperatura de CPU).
 
+### 📐 Métricas de entrada e de saída do modelo
+
+Além de contar e cronometrar predições, o `service.py` mede **o que entra** e **o que sai** dos modelos. São essas métricas que, mais adiante, permitem perceber *drift*:
+
+| Métrica (Prometheus) | Tipo | Rótulos | O que mede |
+| --- | --- | --- | --- |
+| `input_words_*` | Histogram | — | Comprimento de cada mensagem, em palavras. Registrado **uma vez por mensagem** |
+| `prediction_input_words_*` | Histogram | `model`, `intent` | Comprimento da mensagem, separado pela classe que cada modelo previu |
+| `prediction_confidence_*` | Histogram | `model`, `intent` | Probabilidade da classe escolhida (a maior). A referência do "chute" é 1 / nº de classes |
+| `prediction_margin_*` | Histogram | `model`, `intent` | Diferença entre a 1ª e a 2ª maior probabilidade. Perto de 0 = modelo dividido |
+
+Um histograma permite tirar a **média** sem guardar cada valor: `soma / contagem` na janela. Exemplo, o comprimento médio por classe prevista:
+
+```promql
+sum by (model, intent) (increase(prediction_input_words_sum[$__range]))
+/
+sum by (model, intent) (increase(prediction_input_words_count[$__range]))
+```
+
+E a fração de predições com confiança ≤ 50% usa diretamente um bucket (`le="0.5"` = "menor ou igual a 0,5"):
+
+```promql
+sum by (model) (increase(prediction_confidence_bucket{le="0.5"}[$__range]))
+/
+sum by (model) (increase(prediction_confidence_count[$__range]))
+```
+
 ### 📝 Pilar 2: Logs
 
 Logs são registros textuais de eventos ocorridos em um momento específico. A integração no arquivo `observability.py` (via `LoggingInstrumentor`) intercepta o logger padrão do Python e envia os logs automaticamente para o **Loki**, já carimbados com o `trace_id` e o `span_id` da requisição em andamento.
@@ -139,6 +166,9 @@ done
 ---
 
 ## 🔍 6. Explorando no Grafana
+
+> [!TIP]
+> Existe um dashboard pronto em `docs/grafana/intent-clf-obs.json` (importe em **Dashboards → New → Import**) e um passo a passo para montar painéis em `docs/grafana/criando-dashboards.md`. Para os gráficos de linha terem o que mostrar, deixe rodando `python scripts/gerar_trafego.py` (5 min de tráfego contínuo).
 
 No menu lateral esquerdo do Grafana, clique em **Explore** (ícone de bússola 🧭).
 
