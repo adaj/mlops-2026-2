@@ -7,6 +7,16 @@ starlette==0.48.0
 pydantic==2.11.7
 python-dotenv==1.1.1
 
+# --- Observabilidade (src/app.py e o service importam o OpenTelemetry) ---
+# Mesmas versoes do requirements.txt. Nos testes a exportacao fica desligada
+# (OTEL_SDK_DISABLED=true no conftest), mas os imports precisam existir.
+opentelemetry-api==1.45.2
+opentelemetry-sdk==1.45.2
+opentelemetry-exporter-otlp-proto-http==1.45.2
+opentelemetry-instrumentation==0.66b2
+opentelemetry-instrumentation-fastapi==0.66b2
+opentelemetry-instrumentation-logging==0.66b2
+
 # --- Banco (pymongo real; mongomock imita o Mongo em memoria nos testes) ---
 pymongo==4.15.3
 mongomock==4.3.0

@@ -1,3 +1,6 @@
+# ATENCAO: o job "test" do CI instala o requirements-dev.txt (sem TensorFlow).
+# Toda biblioteca importada fora de intent_classifier.py (ex.: fastapi,
+# pymongo, opentelemetry-*) precisa estar TAMBEM no requirements-dev.txt.
 absl-py==2.3.1
 annotated-types==0.7.0
 anyio==4.11.0

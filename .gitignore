@@ -4,6 +4,6 @@ wandb
 models
 .DS_Store
 .pytest_cache/
-.coverage
+.coverage*
 htmlcov/
 .venv/
