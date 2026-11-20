@@ -313,12 +313,9 @@ alerts = [
           "A distribuição de produção se afastou da referência (PSI > 0,25 por 1 minuto). "
           "input_words = data drift na entrada; predicted_intent e confidence = prediction drift.",
           "PSI ao longo do tempo"),
-    alert("drift-ks", "Drift: teste KS significativo (p < 0,01)",
-          "max by (model, feature) (drift_ks_pvalue)", "lt", 0.01,
-          "KS de {{ $labels.feature }} em {{ $labels.model }}: p = {{ humanize $values.B.Value }}",
-          "As distribuições de produção e referência diferem com p-valor abaixo de 0,01 por 1 minuto.",
-          "Teste KS: p-valor"),
 ]
+# Sem regra para o KS: com amostras grandes o p-valor acusa diferencas minimas, entao ele
+# fica como painel de apoio (ao lado do PSI e do D), nao como aviso isolado.
 Path(__file__).with_name("alert-rules.json").write_text(
     json.dumps(alerts, ensure_ascii=False, indent=2), encoding="utf-8")
 

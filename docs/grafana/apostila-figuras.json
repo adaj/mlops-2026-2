@@ -1,0 +1,1311 @@
+{
+  "uid": "apostila-figuras",
+  "title": "Apostila · figuras do drift",
+  "tags": [
+    "apostila"
+  ],
+  "timezone": "browser",
+  "editable": true,
+  "schemaVersion": 39,
+  "time": {
+    "from": "1795184370000",
+    "to": "1795185000000"
+  },
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": false,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      },
+      {
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "iconColor": "rgba(150, 150, 150, 0.35)",
+        "name": "fase",
+        "target": {
+          "type": "tags",
+          "tags": [
+            "fase"
+          ],
+          "limit": 10,
+          "matchAny": true
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Modelo de 3 classes",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"confusion-clf\", feature=\"input_words\"})",
+          "legendFormat": "comprimento",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"confusion-clf\", feature=\"predicted_intent\"})",
+          "legendFormat": "classe prevista",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"confusion-clf\", feature=\"confidence\"})",
+          "legendFormat": "confiança",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#56A64B",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 0.1
+              },
+              {
+                "color": "#C4162A",
+                "value": 0.25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 15,
+          "valueSize": 26
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Modelo de 7 classes",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"clair_intents-clf\", feature=\"input_words\"})",
+          "legendFormat": "comprimento",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"clair_intents-clf\", feature=\"predicted_intent\"})",
+          "legendFormat": "classe prevista",
+          "instant": true,
+          "range": false
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"clair_intents-clf\", feature=\"confidence\"})",
+          "legendFormat": "confiança",
+          "instant": true,
+          "range": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "decimals": 2,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#56A64B",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 0.1
+              },
+              {
+                "color": "#C4162A",
+                "value": 0.25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "horizontal",
+        "textMode": "value_and_name",
+        "colorMode": "background_solid",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "wideLayout": true,
+        "text": {
+          "titleSize": 15,
+          "valueSize": 26
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "PSI ao longo do tempo",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"confusion-clf\", feature=\"input_words\"})",
+          "legendFormat": "comprimento"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"clair_intents-clf\", feature=\"predicted_intent\"})",
+          "legendFormat": "7 classes · classe prevista"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"confusion-clf\", feature=\"predicted_intent\"})",
+          "legendFormat": "3 classes · classe prevista"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"confusion-clf\", feature=\"confidence\"})",
+          "legendFormat": "3 classes · confiança"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"clair_intents-clf\", feature=\"confidence\"})",
+          "legendFormat": "7 classes · confiança"
+        }
+      ],
+      "interval": "15s",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 3,
+            "fillOpacity": 0,
+            "showPoints": "never",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#BDBDBD"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#C4162A",
+                "value": 0.25
+              }
+            ]
+          },
+          "min": 0,
+          "max": 4,
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "comprimento"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0E7C7B"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "7 classes · classe prevista"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#1F60C4"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "3 classes · classe prevista"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#BDBDBD"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": false,
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "3 classes · confiança"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#BDBDBD"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": false,
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "7 classes · confiança"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#BDBDBD"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1.5
+              },
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": false,
+                  "viz": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Teste KS: p-valor",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_ks_pvalue{model=\"confusion-clf\", feature=\"input_words\"})",
+          "legendFormat": "comprimento"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_ks_pvalue{model=\"confusion-clf\", feature=\"confidence\"})",
+          "legendFormat": "3 classes · confiança"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_ks_pvalue{model=\"clair_intents-clf\", feature=\"confidence\"})",
+          "legendFormat": "7 classes · confiança"
+        }
+      ],
+      "interval": "15s",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 3,
+            "fillOpacity": 0,
+            "showPoints": "never",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            },
+            "scaleDistribution": {
+              "type": "log",
+              "log": 10
+            }
+          },
+          "unit": "sci",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#BDBDBD"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#C4162A",
+                "value": 0.01
+              }
+            ]
+          },
+          "min": 1e-10,
+          "max": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "comprimento"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0E7C7B"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "3 classes · confiança"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8F3BB8"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "7 classes · confiança"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#1F60C4"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "7 classes · confiança: PSI",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_psi{model=\"clair_intents-clf\", feature=\"confidence\"})",
+          "legendFormat": "PSI"
+        }
+      ],
+      "interval": "15s",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 3,
+            "fillOpacity": 0,
+            "showPoints": "never",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#BDBDBD"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 0.1
+              },
+              {
+                "color": "#C4162A",
+                "value": 0.25
+              }
+            ]
+          },
+          "min": 0,
+          "max": 1,
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PSI"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#1F60C4"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "7 classes · confiança: D do KS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 12,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(drift_ks_statistic{model=\"clair_intents-clf\", feature=\"confidence\"})",
+          "legendFormat": "D"
+        }
+      ],
+      "interval": "15s",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 3,
+            "fillOpacity": 0,
+            "showPoints": "never",
+            "spanNulls": true,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "unit": "none",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#BDBDBD"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "#8A8A8A",
+                "value": 0.176
+              }
+            ]
+          },
+          "min": 0,
+          "max": 1,
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "D"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#1F60C4"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "showLegend": false,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "barchart",
+      "title": "Comprimento das mensagens por faixa",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"1\"}), \"faixa\", \"1\", \"\", \"\"), \"ordem\", \"01\", \"\", \"\") or label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"2\"}), \"faixa\", \"2\", \"\", \"\"), \"ordem\", \"02\", \"\", \"\") or label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"3\"}), \"faixa\", \"3\", \"\", \"\"), \"ordem\", \"03\", \"\", \"\") or label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"5\"}), \"faixa\", \"4–5\", \"\", \"\"), \"ordem\", \"04\", \"\", \"\") or label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"8\"}), \"faixa\", \"6–8\", \"\", \"\"), \"ordem\", \"05\", \"\", \"\") or label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"13\"}), \"faixa\", \"9–13\", \"\", \"\"), \"ordem\", \"06\", \"\", \"\") or label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"21\"}), \"faixa\", \"14–21\", \"\", \"\"), \"ordem\", \"07\", \"\", \"\") or label_replace(label_replace(max(reference_input_words_bucket_share{model=\"confusion-clf\", le=\"34\"}), \"faixa\", \"22–34\", \"\", \"\"), \"ordem\", \"08\", \"\", \"\")",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "label_replace(label_replace(sum(increase(input_words_bucket{le=\"1\"}[3m] @ 1795184640)) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"1\", \"\", \"\"), \"ordem\", \"01\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"2\"}[3m] @ 1795184640)) - sum(increase(input_words_bucket{le=\"1\"}[3m] @ 1795184640))) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"2\", \"\", \"\"), \"ordem\", \"02\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"3\"}[3m] @ 1795184640)) - sum(increase(input_words_bucket{le=\"2\"}[3m] @ 1795184640))) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"3\", \"\", \"\"), \"ordem\", \"03\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"5\"}[3m] @ 1795184640)) - sum(increase(input_words_bucket{le=\"3\"}[3m] @ 1795184640))) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"4–5\", \"\", \"\"), \"ordem\", \"04\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"8\"}[3m] @ 1795184640)) - sum(increase(input_words_bucket{le=\"5\"}[3m] @ 1795184640))) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"6–8\", \"\", \"\"), \"ordem\", \"05\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"13\"}[3m] @ 1795184640)) - sum(increase(input_words_bucket{le=\"8\"}[3m] @ 1795184640))) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"9–13\", \"\", \"\"), \"ordem\", \"06\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"21\"}[3m] @ 1795184640)) - sum(increase(input_words_bucket{le=\"13\"}[3m] @ 1795184640))) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"14–21\", \"\", \"\"), \"ordem\", \"07\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"34\"}[3m] @ 1795184640)) - sum(increase(input_words_bucket{le=\"21\"}[3m] @ 1795184640))) / sum(increase(input_words_count[3m] @ 1795184640)), \"faixa\", \"22–34\", \"\", \"\"), \"ordem\", \"08\", \"\", \"\")",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "label_replace(label_replace(sum(increase(input_words_bucket{le=\"1\"}[3m] @ 1795184880)) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"1\", \"\", \"\"), \"ordem\", \"01\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"2\"}[3m] @ 1795184880)) - sum(increase(input_words_bucket{le=\"1\"}[3m] @ 1795184880))) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"2\", \"\", \"\"), \"ordem\", \"02\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"3\"}[3m] @ 1795184880)) - sum(increase(input_words_bucket{le=\"2\"}[3m] @ 1795184880))) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"3\", \"\", \"\"), \"ordem\", \"03\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"5\"}[3m] @ 1795184880)) - sum(increase(input_words_bucket{le=\"3\"}[3m] @ 1795184880))) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"4–5\", \"\", \"\"), \"ordem\", \"04\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"8\"}[3m] @ 1795184880)) - sum(increase(input_words_bucket{le=\"5\"}[3m] @ 1795184880))) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"6–8\", \"\", \"\"), \"ordem\", \"05\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"13\"}[3m] @ 1795184880)) - sum(increase(input_words_bucket{le=\"8\"}[3m] @ 1795184880))) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"9–13\", \"\", \"\"), \"ordem\", \"06\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"21\"}[3m] @ 1795184880)) - sum(increase(input_words_bucket{le=\"13\"}[3m] @ 1795184880))) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"14–21\", \"\", \"\"), \"ordem\", \"07\", \"\", \"\") or label_replace(label_replace((sum(increase(input_words_bucket{le=\"34\"}[3m] @ 1795184880)) - sum(increase(input_words_bucket{le=\"21\"}[3m] @ 1795184880))) / sum(increase(input_words_count[3m] @ 1795184880)), \"faixa\", \"22–34\", \"\", \"\"), \"ordem\", \"08\", \"\", \"\")",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "ordem"
+              }
+            ]
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "ordem": true
+            },
+            "renameByName": {
+              "faixa": " ",
+              "Value #A": "referência",
+              "Value #B": "fase estável",
+              "Value #C": "fase em português"
+            },
+            "indexByName": {
+              "faixa": 0,
+              "referência": 1,
+              "fase estável": 2,
+              "fase em português": 3
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 0.6,
+          "custom": {
+            "fillOpacity": 90,
+            "lineWidth": 0,
+            "axisPlacement": "auto"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "referência"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8A8A8A"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "fase estável"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8FD1CF"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "fase em português"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#0E7C7B"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": " "
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": " ",
+        "orientation": "vertical",
+        "groupWidth": 0.85,
+        "barWidth": 0.9,
+        "showValue": "never",
+        "text": {
+          "valueSize": 12
+        },
+        "xTickLabelRotation": 0,
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "barchart",
+      "title": "Classes previstas · modelo de 7 classes",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 12,
+        "h": 11
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by (intent) (reference_class_share{model=\"clair_intents-clf\", intent!=\"ping\"})",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (intent) (increase(prediction_count_total{model=\"clair_intents-clf\", intent!=\"ping\"}[3m] @ 1795184640)) / scalar(sum(increase(prediction_count_total{model=\"clair_intents-clf\"}[3m] @ 1795184640)))",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (intent) (increase(prediction_count_total{model=\"clair_intents-clf\", intent!=\"ping\"}[3m] @ 1795184880)) / scalar(sum(increase(prediction_count_total{model=\"clair_intents-clf\"}[3m] @ 1795184880)))",
+          "instant": true,
+          "range": false,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "intent": " ",
+              "Value #A": "referência",
+              "Value #B": "fase estável",
+              "Value #C": "fase em português"
+            },
+            "indexByName": {
+              "intent": 0,
+              "referência": 1,
+              "fase estável": 2,
+              "fase em português": 3
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "referência",
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "custom": {
+            "fillOpacity": 90,
+            "lineWidth": 0,
+            "axisPlacement": "hidden"
+          },
+          "decimals": 0
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "referência"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#8A8A8A"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "fase estável"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9DC3F7"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "fase em português"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#1F60C4"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": " "
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "xField": " ",
+        "orientation": "horizontal",
+        "groupWidth": 0.85,
+        "barWidth": 0.9,
+        "showValue": "always",
+        "text": {
+          "valueSize": 15
+        },
+        "xTickLabelRotation": 0,
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "none"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "state-timeline",
+      "title": "Alerta PSI > 0,25: estado de cada instância",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 54,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(max(drift_psi{model=\"confusion-clf\", feature=\"input_words\"}) > bool 0.25) + (min_over_time((max(drift_psi{model=\"confusion-clf\", feature=\"input_words\"}) > bool 0.25)[61s:30s]) * (count_over_time((max(drift_psi{model=\"confusion-clf\", feature=\"input_words\"}) > bool 0.25)[61s:30s]) >= bool 3))",
+          "legendFormat": "3 classes · comprimento",
+          "interval": "30s"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(max(drift_psi{model=\"confusion-clf\", feature=\"predicted_intent\"}) > bool 0.25) + (min_over_time((max(drift_psi{model=\"confusion-clf\", feature=\"predicted_intent\"}) > bool 0.25)[61s:30s]) * (count_over_time((max(drift_psi{model=\"confusion-clf\", feature=\"predicted_intent\"}) > bool 0.25)[61s:30s]) >= bool 3))",
+          "legendFormat": "3 classes · classe prevista",
+          "interval": "30s"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(max(drift_psi{model=\"confusion-clf\", feature=\"confidence\"}) > bool 0.25) + (min_over_time((max(drift_psi{model=\"confusion-clf\", feature=\"confidence\"}) > bool 0.25)[61s:30s]) * (count_over_time((max(drift_psi{model=\"confusion-clf\", feature=\"confidence\"}) > bool 0.25)[61s:30s]) >= bool 3))",
+          "legendFormat": "3 classes · confiança",
+          "interval": "30s"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(max(drift_psi{model=\"clair_intents-clf\", feature=\"input_words\"}) > bool 0.25) + (min_over_time((max(drift_psi{model=\"clair_intents-clf\", feature=\"input_words\"}) > bool 0.25)[61s:30s]) * (count_over_time((max(drift_psi{model=\"clair_intents-clf\", feature=\"input_words\"}) > bool 0.25)[61s:30s]) >= bool 3))",
+          "legendFormat": "7 classes · comprimento",
+          "interval": "30s"
+        },
+        {
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(max(drift_psi{model=\"clair_intents-clf\", feature=\"predicted_intent\"}) > bool 0.25) + (min_over_time((max(drift_psi{model=\"clair_intents-clf\", feature=\"predicted_intent\"}) > bool 0.25)[61s:30s]) * (count_over_time((max(drift_psi{model=\"clair_intents-clf\", feature=\"predicted_intent\"}) > bool 0.25)[61s:30s]) >= bool 3))",
+          "legendFormat": "7 classes · classe prevista",
+          "interval": "30s"
+        },
+        {
+          "refId": "F",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(max(drift_psi{model=\"clair_intents-clf\", feature=\"confidence\"}) > bool 0.25) + (min_over_time((max(drift_psi{model=\"clair_intents-clf\", feature=\"confidence\"}) > bool 0.25)[61s:30s]) * (count_over_time((max(drift_psi{model=\"clair_intents-clf\", feature=\"confidence\"}) > bool 0.25)[61s:30s]) >= bool 3))",
+          "legendFormat": "7 classes · confiança",
+          "interval": "30s"
+        }
+      ],
+      "interval": "30s",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#D9D9D9"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#D9D9D9",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 1
+              },
+              {
+                "color": "#C4162A",
+                "value": 2
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Normal",
+                  "color": "#D9D9D9",
+                  "index": 0
+                },
+                "1": {
+                  "text": "Pending",
+                  "color": "#FF9830",
+                  "index": 1
+                },
+                "2": {
+                  "text": "Firing",
+                  "color": "#C4162A",
+                  "index": 2
+                }
+              }
+            }
+          ],
+          "custom": {
+            "lineWidth": 0,
+            "fillOpacity": 90
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "mergeValues": true,
+        "showValue": "never",
+        "rowHeight": 0.8,
+        "alignValue": "left",
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "none"
+        }
+      }
+    }
+  ]
+}

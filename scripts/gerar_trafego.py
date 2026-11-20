@@ -1,9 +1,11 @@
 """Gera trafego para a API, em cenarios com e sem drift, para o Grafana ter o que mostrar.
 
 Cenarios (--cenario):
-  estavel    mensagens do mesmo "mundo" da referencia: exemplos dos dados de
-             TREINO (ingles, chat com a Clair), sorteando por igual entre as
-             classes, como os conjuntos de referencia. Esperado: PSI baixo.
+  estavel    mensagens sorteadas dos proprios conjuntos de REFERENCIA, por igual
+             entre as classes (a mesma composicao da referencia). Assim a fase
+             estavel so difere da referencia pelo acaso da amostra: PSI baixo.
+             (Sortear do treino deixava o modelo de 7 classes ja "afastado" da
+             referencia antes de qualquer drift.)
   portugues  mensagens de alunos em portugues, que o modelo nunca viu.
              Drift SUBITO quando se troca de "estavel" para "portugues".
   gradual    comeca 100% estavel e termina 100% em portugues ao longo de
@@ -25,7 +27,7 @@ from pathlib import Path
 
 import yaml
 
-TRAIN_DIR = Path(__file__).resolve().parent.parent / "src/modules/intent_classifier/data/train"
+REF_DIR = Path(__file__).resolve().parent.parent / "src/modules/intent_classifier/data/reference"
 
 PORTUGUES = [
     "oi", "ok", "?", "valeu", "oi, tudo bem?", "quem é você?",
@@ -43,9 +45,9 @@ PORTUGUES = [
 
 
 def carregar_estavel():
-    """{(arquivo, classe): [exemplos]} dos dados de treino."""
+    """{(arquivo, classe): [exemplos]} dos conjuntos de referencia."""
     grupos = {}
-    for arquivo in sorted(TRAIN_DIR.glob("*_examples.yml")):
+    for arquivo in sorted(REF_DIR.glob("*_reference.yml")):
         for item in yaml.safe_load(arquivo.read_text(encoding="utf-8")):
             grupos[(arquivo.stem, item["intent"])] = [str(e) for e in item["examples"]]
     return grupos

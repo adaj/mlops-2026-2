@@ -303,6 +303,6 @@ O módulo `src/modules/intent_classifier/observability/` concentra toda a observ
 | `drift.py` | Compara a janela das últimas `DRIFT_WINDOW_SIZE` (200) mensagens com a referência: PSI e teste KS | `drift_psi`, `drift_ks_statistic`, `drift_ks_pvalue`, `drift_window_size` |
 
 - Dashboard e alertas ficam versionados em `docs/grafana/` (`build_dashboard.py` gera os JSON; `apply.py` publica no Grafana). Rode `python docs/grafana/apply.py` sempre que recriar o container `lgtm`.
-- Alertas (pasta **MLOps**, grupo **drift**, avaliados a cada 30 s): PSI > 0,25 por 1 min; p-valor do KS < 0,01 por 1 min. Não há *contact point* configurado: os alertas aparecem em *Alerting*, mas ninguém é notificado.
+- Alertas (pasta **MLOps**, grupo **drift**, avaliados a cada 30 s): PSI > 0,25 por 1 min. O teste KS não tem regra própria: o p-valor fica como painel de apoio, porque com amostras grandes ele acusa diferenças mínimas. Não há *contact point* configurado: os alertas aparecem em *Alerting*, mas ninguém é notificado.
 - Para gerar drift de propósito: `python scripts/gerar_trafego.py --cenario estavel|portugues|gradual`.
 - A apostila da aula (LGTM + model drift, com prints deste dashboard) explica como ler cada painel.
