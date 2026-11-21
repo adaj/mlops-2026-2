@@ -122,7 +122,7 @@ FEATURES = ("Variáveis: input_words = comprimento das mensagens (data drift); "
             "predicted_intent = classe prevista e confidence = confiança (prediction drift). ")
 WINDOW_DESC = ("Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); "
                "referência = predições do mesmo modelo nos conjuntos de data/reference/. "
-               "Só é calculado com pelo menos 30 mensagens na janela.")
+               "Só é calculado com a janela cheia (DRIFT_MIN_SAMPLES, padrão igual a DRIFT_WINDOW_SIZE).")
 
 panels.append(row("Drift: produção × referência", y)); y += 1
 panels += [

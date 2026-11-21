@@ -134,7 +134,7 @@ Para inicializar a aplicação e toda a stack LGTM unificada:
     Para rodar sem telemetria nenhuma, use `export OTEL_SDK_DISABLED=true`.
 
 > [!NOTE]
-> As métricas são exportadas em lote a cada 60 segundos (padrão do `PeriodicExportingMetricReader`). Se o gráfico estiver vazio logo depois das primeiras requisições, espere um minuto.
+> As métricas são exportadas em lote a cada 60 segundos (padrão do `PeriodicExportingMetricReader`). No `docker-compose.yml` usamos 15 segundos (`OTEL_METRIC_EXPORT_INTERVAL=15000`). Se o gráfico estiver vazio logo depois das primeiras requisições, espere um intervalo.
 
 ---
 
@@ -300,7 +300,7 @@ O módulo `src/modules/intent_classifier/observability/` concentra toda a observ
 | --- | --- | --- |
 | `metrics.py` | Instrumentos OpenTelemetry e `record_*` (uma chamada por mensagem e por predição) | `prediction_*`, `input_words_*` |
 | `reference.py` | No startup, roda cada modelo sobre `data/reference/*_reference.yml` (rotulados, 15 por classe, diferentes do treino) e publica o perfil | `reference_*` (acurácia, classes, confiança, comprimento) |
-| `drift.py` | Compara a janela das últimas `DRIFT_WINDOW_SIZE` (200) mensagens com a referência: PSI e teste KS | `drift_psi`, `drift_ks_statistic`, `drift_ks_pvalue`, `drift_window_size` |
+| `drift.py` | Compara a janela das últimas `DRIFT_WINDOW_SIZE` (200) mensagens com a referência: PSI e teste KS, só com a janela cheia (`DRIFT_MIN_SAMPLES`) | `drift_psi`, `drift_ks_statistic`, `drift_ks_pvalue`, `drift_window_size` |
 
 - Dashboard e alertas ficam versionados em `docs/grafana/` (`build_dashboard.py` gera os JSON; `apply.py` publica no Grafana). Rode `python docs/grafana/apply.py` sempre que recriar o container `lgtm`.
 - Alertas (pasta **MLOps**, grupo **drift**, avaliados a cada 30 s): PSI > 0,25 por 1 min. O teste KS não tem regra própria: o p-valor fica como painel de apoio, porque com amostras grandes ele acusa diferenças mínimas. Não há *contact point* configurado: os alertas aparecem em *Alerting*, mas ninguém é notificado.

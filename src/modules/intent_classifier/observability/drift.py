@@ -34,7 +34,10 @@ from src.modules.intent_classifier.observability.metrics import (
     SCORE_BUCKETS, WORD_BUCKETS, meter)
 
 WINDOW_SIZE = int(os.getenv("DRIFT_WINDOW_SIZE", "200"))
-MIN_SAMPLES = int(os.getenv("DRIFT_MIN_SAMPLES", "30"))
+# Só calcula com a janela cheia. Com janelas pequenas o acaso domina: numa simulação
+# sem drift (referência de 150), o PSI do comprimento passa de 0,25 em ~38% dos
+# cálculos com 30 mensagens, ~5% com 100 e <1% com 200.
+MIN_SAMPLES = int(os.getenv("DRIFT_MIN_SAMPLES", str(WINDOW_SIZE)))
 EPS = 1e-4   # evita log(0) em faixas vazias
 
 

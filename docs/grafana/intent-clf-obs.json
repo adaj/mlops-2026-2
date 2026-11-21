@@ -368,7 +368,7 @@
       "id": 10,
       "type": "stat",
       "title": "PSI atual",
-      "description": "Population Stability Index de cada variável. Regra de bolso: abaixo de 0,1 estável (verde); de 0,1 a 0,25 mudança moderada (laranja); acima de 0,25 mudança significativa (vermelho). Variáveis: input_words = comprimento das mensagens (data drift); predicted_intent = classe prevista e confidence = confiança (prediction drift). Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com pelo menos 30 mensagens na janela.",
+      "description": "Population Stability Index de cada variável. Regra de bolso: abaixo de 0,1 estável (verde); de 0,1 a 0,25 mudança moderada (laranja); acima de 0,25 mudança significativa (vermelho). Variáveis: input_words = comprimento das mensagens (data drift); predicted_intent = classe prevista e confidence = confiança (prediction drift). Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com a janela cheia (DRIFT_MIN_SAMPLES, padrão igual a DRIFT_WINDOW_SIZE).",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -439,7 +439,7 @@
       "id": 11,
       "type": "timeseries",
       "title": "PSI ao longo do tempo",
-      "description": "Evolução do PSI. As linhas tracejadas horizontais marcam os limites 0,1 e 0,25. Um drift SÚBITO aparece como um degrau; um GRADUAL, como uma rampa. Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com pelo menos 30 mensagens na janela.",
+      "description": "Evolução do PSI. As linhas tracejadas horizontais marcam os limites 0,1 e 0,25. Um drift SÚBITO aparece como um degrau; um GRADUAL, como uma rampa. Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com a janela cheia (DRIFT_MIN_SAMPLES, padrão igual a DRIFT_WINDOW_SIZE).",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -500,7 +500,7 @@
       "id": 12,
       "type": "timeseries",
       "title": "Teste KS: p-valor",
-      "description": "Kolmogorov-Smirnov compara as DISTRIBUIÇÕES inteiras (não só a média) de comprimento e de confiança. p-valor: chance de ver uma diferença desse tamanho se não houvesse drift. Abaixo da linha vermelha (0,01) = diferença estatisticamente significativa. Escala logarítmica: cada linha de grade é 10x menor. Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com pelo menos 30 mensagens na janela.",
+      "description": "Kolmogorov-Smirnov compara as DISTRIBUIÇÕES inteiras (não só a média) de comprimento e de confiança. p-valor: chance de ver uma diferença desse tamanho se não houvesse drift. Abaixo da linha vermelha (0,01) = diferença estatisticamente significativa. Escala logarítmica: cada linha de grade é 10x menor. Produção = janela das últimas mensagens (DRIFT_WINDOW_SIZE, padrão 200); referência = predições do mesmo modelo nos conjuntos de data/reference/. Só é calculado com a janela cheia (DRIFT_MIN_SAMPLES, padrão igual a DRIFT_WINDOW_SIZE).",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
